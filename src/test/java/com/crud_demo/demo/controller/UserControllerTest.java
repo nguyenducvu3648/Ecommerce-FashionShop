@@ -1,5 +1,6 @@
 package com.crud_demo.demo.controller;
 
+import com.demo_crud.demo.DemoApplication;
 import com.demo_crud.demo.dto.request.UserCreationRequest;
 import com.demo_crud.demo.dto.response.UserResponse;
 import com.demo_crud.demo.service.UserService;
@@ -11,16 +12,16 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDate;
 
 
-@ContextConfiguration
+@SpringBootTest(classes = DemoApplication.class)
 @AutoConfigureMockMvc
 public class UserControllerTest {
 
@@ -38,20 +39,19 @@ public class UserControllerTest {
 
     @BeforeEach
     void initData() {
-        // Khởi tạo dữ liệu test
-        dob = LocalDate.of(2024, 1, 1);
+        dob = LocalDate.of(2004, 1, 1);
         request = UserCreationRequest.builder()
                 .firstName("vu")
                 .lastName("vu")
-                .username("vu")
-                .password("vu")
+                .username("vunguyenduc3648")
+                .password("vunguyenduc3648")
                 .dob(dob)
                 .build();
         response = UserResponse.builder()
                 .id("364823123")
                 .firstName("vu")
                 .lastName("vu")
-                .username("vu")
+                .username("vunguyenduc3648")
                 .dob(dob)
                 .build();
 
@@ -62,17 +62,33 @@ public class UserControllerTest {
 
     @Test
     void createUser_validRequest_success() throws Exception {
-        // Chuyển đối tượng request thành chuỗi JSON với ObjectMapper
+
         String content = objectMapper.writeValueAsString(request);
 
-        // Giả lập hành vi của UserService
+
         Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(response);
 
-        // Thực hiện yêu cầu HTTP POST tới /users và kiểm tra phản hồi
-        mockMvc.perform(MockMvcRequestBuilders.post("/identity/users/sign-up")
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/users/sign-up")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.jsonPath("code").value("1000"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("data.id").value("364823123"));
+    }
+    @Test
+    void createUser_usernameInvalid_fail() throws Exception {
 
+        request.setUsername("vu");
+        String content = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/users/sign-up")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value("1002"))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("username must be at least 8 character"));
     }
 }
