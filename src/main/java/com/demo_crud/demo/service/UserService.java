@@ -80,6 +80,7 @@ public class UserService {
     public void deleteUser(@PathVariable UUID id){
         userRepository.deleteById(String.valueOf(id));
     }
+
     public ApiResponse<UserResponse> getMyInfo(){
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();

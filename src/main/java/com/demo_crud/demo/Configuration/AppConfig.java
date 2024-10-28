@@ -43,7 +43,8 @@ public class AppConfig {
     @ConditionalOnProperty(
             prefix = "spring.datasource",
             value = "driver-class-name",
-            havingValue = "com.mysql.cj.jdbc.Driver")
+            havingValue = "com.mysql.cj.jdbc.Driver")//Bean sẽ chỉ được tạo ra nếu giá trị của thuộc tính
+        // spring.datasource.driver-class-name là com.mysql.cj.jdbc.Driver
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         log.info("Initializing application.....");
         return args -> {
