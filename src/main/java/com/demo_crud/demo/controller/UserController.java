@@ -31,7 +31,7 @@ public class UserController {
     @Operation(summary = "tat ca user")
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")//kiem tra vai tro
-//    @PreAuthorize("hasAuthority('APROVE_POST')")    kiem tra quyen truoc khi chay
+//    @PreAuthorize("hasAuthority('APROVE_POST')")   // kiem tra quyen truoc khi chay
     public ApiResponse<List<UserResponse>> getAllUsers() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Username:{}", authentication.getName());

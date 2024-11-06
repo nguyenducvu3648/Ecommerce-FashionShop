@@ -94,7 +94,7 @@ public class AuthenticationService {
         }catch (AppException exception){
             log.info("token is expired");
         }
-    }
+    }   
     public AuthenticationResponse refreshToken (RefreshRequest request)
             throws ParseException, JOSEException {
         var signedJwt = verifyToken(request.getToken() , true);
