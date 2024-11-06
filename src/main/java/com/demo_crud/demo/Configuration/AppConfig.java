@@ -34,42 +34,42 @@ public class AppConfig {
         return new BCryptPasswordEncoder(10);
     }
 
-    @NonFinal
-    static final String ADMIN_USER_NAME = "admin";
-    @NonFinal
-    static final String ADMIN_PASSWORD = "admin";
-
-    @Bean
-    @ConditionalOnProperty(
-            prefix = "spring.datasource",
-            value = "driver-class-name",
-            havingValue = "com.mysql.cj.jdbc.Driver")//Bean sẽ chỉ được tạo ra nếu giá trị của thuộc tính
-        // spring.datasource.driver-class-name là com.mysql.cj.jdbc.Driver
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        log.info("Initializing application.....");
-        return args -> {
-            if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
-                Optional<Role> adminRoleOpt = roleRepository.findById(PredefinedRole.ADMIN_ROLE);
-
-                if (adminRoleOpt.isEmpty()) {
-                    throw new AppException(ErrorCode.ADMIN_NOT_EXISTED);
-                }
-
-                // Chỉ gán role nếu role đã tồn tại
-                Set<Role> roles = new HashSet<>();
-                adminRoleOpt.ifPresent(roles::add);
-
-                // Tạo tài khoản admin
-                User adminUser = User.builder()
-                        .username(ADMIN_USER_NAME)
-                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
-                        .roles(roles)
-                        .build();
-
-                userRepository.save(adminUser);
-                log.warn("Admin user has been created with default password: admin, please change it");
-            }
-            log.info("Application initialization completed .....");
-        };
-    }
+//    @NonFinal
+//    static final String ADMIN_USER_NAME = "admin";
+//    @NonFinal
+//    static final String ADMIN_PASSWORD = "admin";
+//
+//    @Bean
+//    @ConditionalOnProperty(
+//            prefix = "spring.datasource",
+//            value = "driver-class-name",
+//            havingValue = "com.mysql.cj.jdbc.Driver")//Bean sẽ chỉ được tạo ra nếu giá trị của thuộc tính
+//        // spring.datasource.driver-class-name là com.mysql.cj.jdbc.Driver
+//    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+//        log.info("Initializing application.....");
+//        return args -> {
+//            if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
+//                Optional<Role> adminRoleOpt = roleRepository.findById(PredefinedRole.ADMIN_ROLE);
+//
+//                if (adminRoleOpt.isEmpty()) {
+//                    throw new AppException(ErrorCode.ADMIN_NOT_EXISTED);
+//                }
+//
+//                // Chỉ gán role nếu role đã tồn tại
+//                Set<Role> roles = new HashSet<>();
+//                adminRoleOpt.ifPresent(roles::add);
+//
+//                // Tạo tài khoản admin
+//                User adminUser = User.builder()
+//                        .username(ADMIN_USER_NAME)
+//                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
+//                        .roles(roles)
+//                        .build();
+//
+//                userRepository.save(adminUser);
+//                log.warn("Admin user has been created with default password: admin, please change it");
+//            }
+//            log.info("Application initialization completed .....");
+//        };
+//    }
 }
