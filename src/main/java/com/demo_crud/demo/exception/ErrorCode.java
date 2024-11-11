@@ -18,6 +18,8 @@ public enum ErrorCode {
     UNAUTHORIZED_ACCESS( 1007, "you do not have permission", HttpStatus.FORBIDDEN),
     ADMIN_NOT_EXISTED( 1008, "admin does not exist", HttpStatus.NOT_FOUND),
     INVALID_DOB( 1009, "invalid date", HttpStatus.BAD_REQUEST),
+    PRODUCT_NOT_EXISTED( 1001,  "user not existed",HttpStatus.NOT_FOUND),
+    PRODUCT_EXISTED( 1002,  "user existed", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;
