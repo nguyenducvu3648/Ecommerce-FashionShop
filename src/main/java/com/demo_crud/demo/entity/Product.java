@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -23,12 +24,12 @@ public class Product {
     String description;
     LocalDate releaseDate;
     String imageUrl;
+    int quantity;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    List<CartItem> cartItems;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    Cart cart;
 }

@@ -5,12 +5,11 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CartAdditionRequest {
-    String cartId;
-    String productId;
-    int quantity;
+public class CartEditionRequest {
+        String cartItemId;
+        int quantity;
 }

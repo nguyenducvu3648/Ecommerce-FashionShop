@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-import java.util.UUID;
-
 @Getter
 @Setter
 @Builder
@@ -14,11 +11,19 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Cart {
+public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    UUID id;
+    String id;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    List<CartItem> cartItems;
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    Cart cart;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    Product product;
+
+    int quantity;
+    double totalPrice;
 }

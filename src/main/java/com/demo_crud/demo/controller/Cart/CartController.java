@@ -17,21 +17,41 @@ public class CartController {
     CartService cartService;
 
     @PostMapping("/addProduct")
-    ApiResponse<CartResponse> addProduct(@RequestBody CartAdditionRequest request) {
+    public ApiResponse<CartResponse> addProductToCart(@RequestBody CartAdditionRequest request) {
         ApiResponse<CartResponse> response = new ApiResponse<>();
+        try {
+            CartResponse cartResponse = cartService.addProductToCart(request);
+            response.setData(cartResponse);
+            response.setMessage("Product added to cart successfully!");
+        } catch (Exception e) {
+            response.setMessage("Error: " + e.getMessage());
+        }
         return response;
     }
 
-
     @GetMapping("/viewCart")
     public ApiResponse<CartResponse> viewCart() {
-        // Logic to view cart
-        return new ApiResponse<CartResponse>();
+        ApiResponse<CartResponse> response = new ApiResponse<>();
+        try {
+            CartResponse cartResponse = cartService.viewCart();
+            response.setData(cartResponse);
+            response.setMessage("Cart viewed successfully!");
+        } catch (Exception e) {
+            response.setMessage("Error: " + e.getMessage());
+        }
+        return response;
     }
 
     @PostMapping("/checkout")
     public ApiResponse<CartResponse> checkout() {
-        // Logic to checkout
-        return new ApiResponse<CartResponse>();
+        ApiResponse<CartResponse> response = new ApiResponse<>();
+        try {
+            CartResponse cartResponse = cartService.checkout();
+            response.setData(cartResponse);
+            response.setMessage("Checkout successful!");
+        } catch (Exception e) {
+            response.setMessage("Error: " + e.getMessage());
+        }
+        return response;
     }
 }

@@ -17,4 +17,5 @@ public class ProductUpdateRequest {
     String description;
     LocalDate releaseDate;
     String imageUrl;
+    int quantity;
 }
