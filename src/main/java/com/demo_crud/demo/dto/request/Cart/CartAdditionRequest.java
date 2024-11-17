@@ -3,6 +3,8 @@ package com.demo_crud.demo.dto.request.Cart;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartAdditionRequest {
-    String cartId;
-    String productId;
+    UUID productId;
     int quantity;
 }

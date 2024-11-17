@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
@@ -13,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @Entity
 public class CartItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     @ManyToOne
@@ -24,6 +26,9 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     Product product;
 
+    @Column(nullable = false)
     int quantity;
+
+    @Column(nullable = false)
     double totalPrice;
 }
