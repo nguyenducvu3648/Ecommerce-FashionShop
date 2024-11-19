@@ -1,9 +1,9 @@
 package com.demo_crud.demo.dto.response.Cart;
 
+import com.demo_crud.demo.dto.response.ProductResponse.ProductResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,9 +12,8 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartItemResponse {
-    UUID productId;
-    String productName;
-    double productPrice;
+    String cartItemId;
+    ProductResponse productResponse;
     int quantity;
     double totalPrice;
 }

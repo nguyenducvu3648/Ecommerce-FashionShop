@@ -35,16 +35,16 @@ public class CartController {
         return cartService.viewCart();
     }
 
-    @PostMapping("/checkout")
-    public ApiResponse<CartResponse> checkout() {
-        ApiResponse<CartResponse> response = new ApiResponse<>();
-        try {
-            CartResponse cartResponse = cartService.checkout();
-            response.setData(cartResponse);
-            response.setMessage("Checkout successful!");
-        } catch (Exception e) {
-            response.setMessage("Error: " + e.getMessage());
-        }
-        return response;
-    }
+//    @PostMapping("/checkout")
+//    public ApiResponse<CartResponse> checkout() {
+//        ApiResponse<CartResponse> response = new ApiResponse<>();
+//        try {
+//            CartResponse cartResponse = cartService.checkout();
+//            response.setData(cartResponse);
+//            response.setMessage("Checkout successful!");
+//        } catch (Exception e) {
+//            response.setMessage("Error: " + e.getMessage());
+//        }
+//        return response;
+//    }
 }

@@ -9,12 +9,17 @@ import com.demo_crud.demo.entity.Product;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
 import com.demo_crud.demo.repository.Product.ProductRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductService {
     ProductRepository productRepository;
     ProductMapper productMapper;

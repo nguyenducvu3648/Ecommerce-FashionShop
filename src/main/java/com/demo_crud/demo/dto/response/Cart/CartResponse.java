@@ -12,6 +12,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class CartResponse {
-    List<CartItemResponse> cartItemResponses;
+    String user;
+    String cartId;
+    List<CartItemResponse> cartItems;
     double totalAmount;
 }

@@ -6,10 +6,12 @@ import com.demo_crud.demo.dto.request.ApiResponse;
 import com.demo_crud.demo.dto.request.UserCreationRequest;
 import com.demo_crud.demo.dto.request.UserUpdateRequest;
 import com.demo_crud.demo.dto.response.UserResponse;
+import com.demo_crud.demo.entity.Cart;
 import com.demo_crud.demo.entity.Role;
 import com.demo_crud.demo.entity.User;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
+import com.demo_crud.demo.repository.Cart.CartRepository;
 import com.demo_crud.demo.repository.RoleRepository;
 import com.demo_crud.demo.repository.UserRepository;
 import lombok.AccessLevel;
@@ -33,6 +35,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     RoleRepository roleRepository;
+    CartRepository cartRepository;
     public  UserResponse createUser(UserCreationRequest request){
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -45,6 +48,11 @@ public class UserService {
         user.setRoles(roles);
         try {
             user = userRepository.save(user);
+            Cart cart = new Cart();
+            cart.setUser(user);  // Liên kết Cart với User
+            cartRepository.save(cart);
+
+            user.setCart(cart);  // Gán Cart cho User
         } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }

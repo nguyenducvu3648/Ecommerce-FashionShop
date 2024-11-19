@@ -19,10 +19,12 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     List<CartItem> cartItems;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user;
+
+    double totalCartPrice;
 }

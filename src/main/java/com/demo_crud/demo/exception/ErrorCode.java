@@ -18,11 +18,12 @@ public enum ErrorCode {
     UNAUTHORIZED_ACCESS( 1007, "you do not have permission", HttpStatus.FORBIDDEN),
     ADMIN_NOT_EXISTED( 1008, "admin does not exist", HttpStatus.NOT_FOUND),
     INVALID_DOB( 1009, "invalid date", HttpStatus.BAD_REQUEST),
-    PRODUCT_NOT_EXISTED( 1010,  "user not existed",HttpStatus.NOT_FOUND),
-    PRODUCT_EXISTED( 1011,  "user existed", HttpStatus.BAD_REQUEST),
+    PRODUCT_NOT_EXISTED( 1010,  "product not existed",HttpStatus.NOT_FOUND),
+    PRODUCT_EXISTED( 1011,  "product existed", HttpStatus.BAD_REQUEST),
     CART_NOT_EXISTED( 1012, "cart does not exist", HttpStatus.NOT_FOUND),
     INSUFFICIENT_STOCK( 1013, "insufficient stock", HttpStatus.BAD_REQUEST),
-    ;
+    INVALID_ACTION(1014,"invalid action" , HttpStatus.BAD_REQUEST),
+    CART_ITEM_NOT_EXISTED(1016, "cart item not existed",HttpStatus.NOT_FOUND);
     int code;
     String message;
     HttpStatus statusCode;
