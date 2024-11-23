@@ -1,7 +1,6 @@
 package com.demo_crud.demo.service.Cart;
 
 import com.demo_crud.demo.Mapper.Cart.CartMapper;
-import com.demo_crud.demo.dto.request.ApiResponse;
 import com.demo_crud.demo.dto.request.Cart.CartAdditionRequest;
 import com.demo_crud.demo.dto.request.Cart.CartEditionRequest;
 import com.demo_crud.demo.entity.Cart;
@@ -24,9 +23,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -46,8 +42,7 @@ public class CartService {
             throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
         }
 
-        // Lấy giỏ hàng của người dùng
-        User currentUser = getCurrentUser();  // Phương thức này sẽ lấy thông tin người dùng hiện tại
+        User currentUser = getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseGet(() -> createCartForUser(currentUser));  // Nếu chưa có giỏ hàng, tạo mới
 
@@ -97,7 +92,6 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    // Lấy người dùng hiện tại (thực tế có thể lấy từ SecurityContext hoặc Session)
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication: {}", authentication);
@@ -129,19 +123,14 @@ public class CartService {
 
 
 
-    public ApiResponse<CartResponse> viewCart() {
+    public CartResponse viewCart() {
         User currentUser = getCurrentUser();
-        log.info("Getting cart for user: {}", currentUser.getUsername());
-
-        // Tìm giỏ hàng của user
-        Optional<Cart> existingCart = cartRepository.findByUser(currentUser);
-
-        if (existingCart.isPresent()) {
-            log.info("Found existing cart for user {}", currentUser.getUsername());
-        }
-        return ApiResponse.<CartResponse>builder()
-                .data(cartMapper.toCartResponse(existingCart.get()))
-                .build();
+        Cart cart = cartRepository.findByUser(currentUser)
+                .orElseGet(() -> {
+                    log.info("No cart found for user {}. Returning an empty cart.", currentUser.getUsername());
+                    return new Cart(); // Trả về giỏ hàng rỗng
+                });
+        return cartMapper.toCartResponse(cart);
     }
 
     public CartResponse editCart(CartEditionRequest request) {
@@ -149,74 +138,66 @@ public class CartService {
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
-        // Tìm sản phẩm trong giỏ hàng
         CartItem cartItem = cart.getCartItems().stream()
                 .filter(item -> item.getId().equals(request.getCartItemId()))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_EXISTED));
-        if (!cartItem.getProduct().getId().equals(request.getProductId())) {
-            throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED); // Nếu không khớp, ném ra lỗi
-        }
-        switch (request.getAction()) {
-            case "REMOVE" ->
-                // Xóa sản phẩm khỏi giỏ hàng nếu hành động là REMOVE
-                    cart.getCartItems().remove(cartItem);
-            case "UPDATE" -> {
-                // Kiểm tra tồn kho khi cập nhật số lượng
-                Product product = cartItem.getProduct();
-                if (request.getQuantity() < 0 || request.getQuantity() > product.getQuantity()) {
-                    // Nếu số lượng yêu cầu lớn hơn số lượng tồn kho hoặc nhỏ hơn 0
-                    throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
-                }
 
-                // Cập nhật số lượng và tổng giá
-                cartItem.setQuantity(request.getQuantity());
-                cartItem.setTotalPrice(request.getQuantity() * product.getPrice());
+        Product product = cartItem.getProduct();
+        if (request.getQuantity() == 0) {
+            cart.getCartItems().remove(cartItem);
+        } else {
+            if (product.getQuantity() < request.getQuantity()) {
+                throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
             }
-            case "ADD" -> {
-                // Thêm sản phẩm vào giỏ hàng nếu hành động là ADD
-                Product product = productRepository.findById((request.getProductId()))
-                        .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
-
-                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-                CartItem newCartItem = new CartItem();
-                newCartItem.setProduct(product);
-                newCartItem.setQuantity(request.getQuantity());
-                newCartItem.setTotalPrice(request.getQuantity() * product.getPrice());
-
-                // Thêm vào giỏ hàng
-                cart.getCartItems().add(newCartItem);
-            }
-            case "DELETE_ALL" ->
-                // Xóa tất cả sản phẩm trong giỏ hàng nếu hành động là DELETE_ALL
-                    cart.getCartItems().clear();
-            case null, default -> throw new AppException(ErrorCode.INVALID_ACTION);
+            cartItem.setQuantity(request.getQuantity());
+            cartItem.setTotalPrice(request.getQuantity() * product.getPrice());
         }
 
-        // Cập nhật tổng giá giỏ hàng
         double totalCartPrice = cart.getCartItems().stream()
                 .mapToDouble(CartItem::getTotalPrice)
                 .sum();
         cart.setTotalCartPrice(totalCartPrice);
 
+        cartRepository.save(cart);
+        return cartMapper.toCartResponse(cart);
+    }
+
+    public CartResponse removeCartItem(String cartItemId) {
+        User currentUser = getCurrentUser();
+
+        Cart cart = cartRepository.findByUser(currentUser)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
+        log.info("Cart items for user {}: {}", currentUser.getUsername(), cart.getCartItems());
+        log.info("Removing cart item with id: {}", cartItemId);
+
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getId().equals(cartItemId))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_EXISTED));
+        cart.getCartItems().remove(cartItem);
+
+
+        double totalCartPrice = cart.getCartItems().stream()
+                .mapToDouble(CartItem::getTotalPrice)
+                .sum();
+        cart.setTotalCartPrice(totalCartPrice);
+
+        cartRepository.save(cart);
+        return cartMapper.toCartResponse(cart);
+    }
+
+    public CartResponse clearCart() {
+        User currentUser = getCurrentUser();
+        Cart cart = cartRepository.findByUser(currentUser)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
+
+        cart.getCartItems().clear();
+        cart.setTotalCartPrice(0);
 
         cartRepository.save(cart);
         return cartMapper.toCartResponse(cart);
     }
 
 
-
-    // Thực hiện thanh toán
-//    public CartResponse checkout() {
-//        Cart cart = cartRepository.findFirstByOrderByIdDesc()
-//                .orElseThrow(() -> new RuntimeException("Cart is empty!"));
-//
-//        // Xử lý thanh toán logic ở đây (giả sử xử lý đơn giản)
-//
-//        // Sau khi thanh toán, xóa giỏ hàng
-//        cartRepository.delete(cart);
-//
-//        // Tạo response sau khi thanh toán
-//        return new CartResponse(List.of(), 0.0);
-//    }
 }

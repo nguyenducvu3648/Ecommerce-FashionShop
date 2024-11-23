@@ -32,19 +32,21 @@ public class CartController {
 
     @GetMapping("/viewCart")
     public ApiResponse<CartResponse> viewCart() {
-        return cartService.viewCart();
+        ApiResponse<CartResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(cartService.viewCart());
+        return apiResponse;
+    }
+    @DeleteMapping("/removeCartItem/{cartItemId}")
+    public ApiResponse<CartResponse> removeCartItem(@PathVariable String cartItemId){
+        ApiResponse<CartResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(cartService.removeCartItem(cartItemId));
+        return apiResponse;
+    }
+    @DeleteMapping("/clearCart")
+    public ApiResponse<CartResponse> clearCart(){
+        ApiResponse<CartResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(cartService.clearCart());
+        return apiResponse;
     }
 
-//    @PostMapping("/checkout")
-//    public ApiResponse<CartResponse> checkout() {
-//        ApiResponse<CartResponse> response = new ApiResponse<>();
-//        try {
-//            CartResponse cartResponse = cartService.checkout();
-//            response.setData(cartResponse);
-//            response.setMessage("Checkout successful!");
-//        } catch (Exception e) {
-//            response.setMessage("Error: " + e.getMessage());
-//        }
-//        return response;
-//    }
 }

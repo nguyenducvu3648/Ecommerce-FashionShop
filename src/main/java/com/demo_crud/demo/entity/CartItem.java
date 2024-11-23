@@ -13,9 +13,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@ToString(onlyExplicitlyIncluded = true)
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @ToString.Include
     String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,8 +29,10 @@ public class CartItem {
     Product product;
 
     @Column(nullable = false)
+    @ToString.Include
     int quantity;
 
     @Column(nullable = false)
+    @ToString.Include
     double totalPrice;
 }
