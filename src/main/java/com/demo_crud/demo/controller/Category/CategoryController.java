@@ -1,5 +1,8 @@
 package com.demo_crud.demo.controller.Category;
 
+import com.demo_crud.demo.dto.request.ApiResponse;
+import com.demo_crud.demo.dto.request.Category.CategoryCreationRequest;
+import com.demo_crud.demo.dto.response.Category.CategoryResponse;
 import com.demo_crud.demo.service.Category.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,4 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults (level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryController {
     CategoryService categoryService;
+    public ApiResponse<CategoryResponse> createCategory(CategoryCreationRequest request){
+        ApiResponse<CategoryResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(categoryService.createCategory(request));
+        return apiResponse;
+    }
 }

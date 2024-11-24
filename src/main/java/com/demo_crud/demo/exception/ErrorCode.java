@@ -23,7 +23,8 @@ public enum ErrorCode {
     CART_NOT_EXISTED( 1012, "cart does not exist", HttpStatus.NOT_FOUND),
     INSUFFICIENT_STOCK( 1013, "insufficient stock", HttpStatus.BAD_REQUEST),
     INVALID_ACTION(1014,"invalid action" , HttpStatus.BAD_REQUEST),
-    CART_ITEM_NOT_EXISTED(1016, "cart item not existed",HttpStatus.NOT_FOUND);
+    CART_ITEM_NOT_EXISTED(1016, "cart item not existed",HttpStatus.NOT_FOUND),
+    CATEGORY_EXISTED(1017,"category has been existed",HttpStatus.NOT_FOUND);
     int code;
     String message;
     HttpStatus statusCode;
