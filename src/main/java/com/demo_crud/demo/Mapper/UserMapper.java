@@ -11,10 +11,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
-    User toUser(UserCreationRequest request);//mapping dữ liệu từ UserCreationRequest sang User
+    User toUser(UserCreationRequest request);
 
-    @Mapping(source = "firstName", target = "lastName")//trường firstName trong đối tượng nguồn sẽ được ánh xạ và gán cho trường lastName trong đối tượng đích.
-    UserResponse toUserResponse(User user); //mapping dữ liệu từ User sang UserResponse
+    @Mapping(source = "firstName", target = "lastName")
+    UserResponse toUserResponse(User user);
 
     @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
