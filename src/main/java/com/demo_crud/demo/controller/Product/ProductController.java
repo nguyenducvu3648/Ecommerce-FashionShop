@@ -4,7 +4,6 @@ import com.demo_crud.demo.dto.request.ApiResponse;
 import com.demo_crud.demo.dto.request.ProductRequest.ProductCreationRequest;
 import com.demo_crud.demo.dto.request.ProductRequest.ProductUpdateRequest;
 import com.demo_crud.demo.dto.response.ProductResponse.ProductResponse;
-import com.demo_crud.demo.service.Cart.CartService;
 import com.demo_crud.demo.service.Product.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +22,6 @@ import java.util.UUID;
 @Tag(name = "Quản lý Sản phẩm")
 public class ProductController {
     ProductService productService ;
-    CartService cartService ;
 
     @Operation(summary = "Lấy tất cả sản phẩm")
     @GetMapping("/getAll")
@@ -57,5 +55,11 @@ public class ProductController {
     public String deleteProduct(@PathVariable String id){
         productService.deleteProduct(String.valueOf(UUID.fromString(id)));
         return "product has been deleted";
+    }
+    @GetMapping("/getProductByCategory/{id}")
+    public ApiResponse<List<ProductResponse>> getProductByCategory( @PathVariable String id){
+        ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setData(productService.getProductByCategory(id));
+        return apiResponse;
     }
 }

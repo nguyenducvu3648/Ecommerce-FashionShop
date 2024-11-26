@@ -15,6 +15,7 @@ import java.util.UUID;
 public class ProductResponse {
     String id;
     String name;
+    String categoryName;
     double price;
     String description;
     LocalDate releaseDate;

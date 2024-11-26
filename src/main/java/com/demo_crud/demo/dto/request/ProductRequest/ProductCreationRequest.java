@@ -17,4 +17,5 @@ public class ProductCreationRequest {
     LocalDate releaseDate;
     String imageUrl;
     int quantity;
+    String categoryId;
 }

@@ -23,7 +23,7 @@ public class CartController {
         apiResponse.setData(cartService.addProductToCart(request));
         return apiResponse;
     }
-    @PostMapping("/editCart")
+    @PutMapping("/editCart")
     public ApiResponse<CartResponse> editCart(@RequestBody CartEditionRequest request){
         ApiResponse<CartResponse> apiResponse = new ApiResponse<>();
         apiResponse.setData(cartService.editCart(request));

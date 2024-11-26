@@ -5,9 +5,11 @@ import com.demo_crud.demo.dto.request.ApiResponse;
 import com.demo_crud.demo.dto.request.ProductRequest.ProductCreationRequest;
 import com.demo_crud.demo.dto.request.ProductRequest.ProductUpdateRequest;
 import com.demo_crud.demo.dto.response.ProductResponse.ProductResponse;
+import com.demo_crud.demo.entity.Category;
 import com.demo_crud.demo.entity.Product;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
+import com.demo_crud.demo.repository.Category.CategoryRepository;
 import com.demo_crud.demo.repository.Product.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class ProductService {
     ProductRepository productRepository;
     ProductMapper productMapper;
+    CategoryRepository categoryRepository;
 
     public ApiResponse<List<ProductResponse>> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -37,14 +41,20 @@ public class ProductService {
         if (productRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.PRODUCT_EXISTED);
         }
+        Optional<Category> categoryOptional = categoryRepository.findById(request.getCategoryId());
+        if (categoryOptional.isEmpty()) {
+            throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
+        }
+        Category category = categoryOptional.get();
         Product product = productMapper.toProduct(request);
+        product.setCategory(category);
         product = productRepository.save(product);
         return productMapper.toProductResponse(product);
     }
 
     public ApiResponse<ProductResponse> getProductById(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)); ;
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         ProductResponse productResponse = productMapper.toProductResponse(product);
         return ApiResponse.<ProductResponse>builder()
                 .data(productResponse)
@@ -60,5 +70,12 @@ public class ProductService {
 
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
+    }
+
+    public List<ProductResponse> getProductByCategory(String id) {
+        List<Product> products = productRepository.findByCategoryId(id);
+        return products.stream()
+                .map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
     }
 }

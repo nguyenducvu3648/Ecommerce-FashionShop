@@ -2,6 +2,7 @@ package com.demo_crud.demo.service.Category;
 
 import com.demo_crud.demo.Mapper.Category.CategoryMapper;
 import com.demo_crud.demo.dto.request.Category.CategoryCreationRequest;
+import com.demo_crud.demo.dto.request.Category.CategoryUpdateRequest;
 import com.demo_crud.demo.dto.response.Category.CategoryResponse;
 import com.demo_crud.demo.entity.Category;
 import com.demo_crud.demo.exception.AppException;
@@ -12,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,17 @@ public class CategoryService {
             throw new AppException(ErrorCode.CATEGORY_EXISTED);
         }
         Category category = categoryMapper.toCategory(request);
+
         categoryRepository.save(category);
         return categoryMapper.toCategoryResponse(category);
+    }
+    public CategoryResponse updateCategory( String id, CategoryUpdateRequest request) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
+        categoryMapper.updateCategory(category, request);
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
+    }
+    public void deleteCategory(String id) {
+        categoryRepository.deleteById(id);
     }
 }
