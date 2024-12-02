@@ -1,6 +1,8 @@
 package com.demo_crud.demo.Configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "/users/sign-up",
@@ -28,12 +32,11 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/webjars/**",
     };
-
-    @Autowired
-    private CustomJwtDecoder customJwtDecoder;
-
+    CustomJwtDecoder customJwtDecoder;
+    CorsConfig corsConfig;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.GET ,PUBLIC_ENDPOINTS).permitAll()

@@ -15,6 +15,7 @@ public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     Product toProduct(ProductCreationRequest request);
 
+    @Mapping(target = "imageUrl", source = "imageUrl")
     @Mapping(target = "categoryName", expression = "java(product.getCategory() != null ? product.getCategory().getName() : null)")
     ProductResponse toProductResponse(Product product);
 

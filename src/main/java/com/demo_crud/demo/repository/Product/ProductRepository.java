@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, String> {
     boolean existsByName(String name);
     List<Product> findByCategoryId(String categoryId);
+    List<Product>  findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String nameKeyword, String descriptionKeyword);
 }

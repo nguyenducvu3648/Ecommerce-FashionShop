@@ -13,8 +13,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
+
     @Transactional
     public CategoryResponse createCategory(CategoryCreationRequest request) {
         if (categoryRepository.existsByName(request.getName())) {
@@ -31,6 +33,12 @@ public class CategoryService {
 
         categoryRepository.save(category);
         return categoryMapper.toCategoryResponse(category);
+    }
+    public List<CategoryResponse> getAllCategory() {
+        List<Category> categoryList = categoryRepository.findAll();
+        return categoryList.stream()
+                .map(categoryMapper::toCategoryResponse)
+                .collect(Collectors.toList());
     }
     public CategoryResponse updateCategory( String id, CategoryUpdateRequest request) {
         Category category = categoryRepository.findById(id)
