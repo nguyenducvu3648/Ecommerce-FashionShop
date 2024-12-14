@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,15 +15,21 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+@Table(name = "customer_order")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     String id;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
 
-    LocalDate orderDate;
+    LocalDate createdAt;
+    LocalDateTime updatedAt;
 
-    @OneToMany
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     List<OrderItem> orderItems;
 
     double totalAmount;
@@ -30,5 +37,6 @@ public class Order {
     @OneToOne
     Payment payment;
 
+    @Enumerated(EnumType.STRING)
     String orderStatus;
 }

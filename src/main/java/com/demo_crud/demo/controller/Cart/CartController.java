@@ -4,11 +4,15 @@ import com.demo_crud.demo.dto.request.ApiResponse;
 import com.demo_crud.demo.dto.request.Cart.CartAdditionRequest;
 import com.demo_crud.demo.dto.request.Cart.CartEditionRequest;
 import com.demo_crud.demo.dto.response.Cart.CartResponse;
+import com.demo_crud.demo.entity.CartItem;
+import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.service.Cart.CartService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,5 +52,10 @@ public class CartController {
         apiResponse.setData(cartService.clearCart());
         return apiResponse;
     }
-
+    @PostMapping("/selectCartItems")
+    public ApiResponse<List<CartItem>> selectCartItems(@RequestBody List<String> cartItemIds) {
+        ApiResponse<List<CartItem>> apiResponse = new ApiResponse<>();
+        apiResponse.setData(cartService.selectCartItems(cartItemIds));
+        return apiResponse;
+    }
 }

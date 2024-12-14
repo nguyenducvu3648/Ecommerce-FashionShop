@@ -33,4 +33,6 @@ public class CartItem {
     @Column(nullable = false)
     @ToString.Include
     double totalPrice;
+
+    private boolean selected = false;
 }

@@ -10,9 +10,11 @@ import com.demo_crud.demo.entity.User;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
 import com.demo_crud.demo.repository.Cart.CartRepository;
+import com.demo_crud.demo.repository.CartItem.CartItemRepository;
 import com.demo_crud.demo.repository.Product.ProductRepository;
 import com.demo_crud.demo.dto.response.Cart.CartResponse;
 import com.demo_crud.demo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,6 +37,7 @@ public class CartService {
     ProductRepository productRepository;
     CartMapper cartMapper;
     UserRepository userRepository;
+    CartItemRepository cartItemRepository;
 
     public CartResponse addProductToCart(CartAdditionRequest request) {
         Product product = productRepository.findById(String.valueOf(request.getProductId()))
@@ -199,5 +204,21 @@ public class CartService {
         return cartMapper.toCartResponse(cart);
     }
 
+    @Transactional
+    public List<CartItem> selectCartItems(List<String> cartItemIds) {
+        User currentUser = getCurrentUser();
+        Cart cart = cartRepository.findByUser(currentUser)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
+
+        List<CartItem> updatedCartItems = cart.getCartItems().stream()
+                .map(cartItem -> {
+                    cartItem.setSelected(cartItemIds.contains(cartItem.getId()));
+                    return cartItem;
+                })
+                .collect(Collectors.toList());
+
+        cartItemRepository.saveAll(updatedCartItems);
+        return updatedCartItems;
+    }
 
 }

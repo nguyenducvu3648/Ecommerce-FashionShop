@@ -17,14 +17,19 @@ public class OrderItem {
     String id;
 
     @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
     @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
     Order order;
 
+    @Column(nullable = false)
     int quantity;
 
-    double orderedProductPrice;
+    @Column(nullable = false)
+    double price;
 
-
+    @Column(nullable = false)
+    private double totalPrice;
 }
