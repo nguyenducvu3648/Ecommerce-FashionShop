@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, String> {
-    Optional<Cart> findFirstByOrderByIdDesc();
     Optional<Cart> findByUser(User user);
     boolean existsByUser(User user);
 }

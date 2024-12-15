@@ -5,7 +5,6 @@ import com.demo_crud.demo.dto.request.Cart.CartAdditionRequest;
 import com.demo_crud.demo.dto.request.Cart.CartEditionRequest;
 import com.demo_crud.demo.dto.response.Cart.CartResponse;
 import com.demo_crud.demo.entity.CartItem;
-import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.service.Cart.CartService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

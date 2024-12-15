@@ -17,9 +17,13 @@ import com.demo_crud.demo.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -27,6 +31,7 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.List;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -97,5 +102,32 @@ public class UserService {
         return ApiResponse.<UserResponse>builder()
                 .data(userMapper.toUserResponse(user))
                 .build();
+    }
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Authentication: {}", authentication);
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            // Xử lý Jwt principal
+            if (principal instanceof Jwt jwt) {
+                // Lấy username từ JWT claims
+                String username = jwt.getClaimAsString("sub"); // hoặc "preferred_username" tùy cấu hình
+                // Hoặc có thể lấy email: jwt.getClaimAsString("email")
+
+                log.info("Username from JWT: {}", username);
+
+                return userRepository.findByUsername(username)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            } else if (principal instanceof UserDetails userDetails) {
+                String username = userDetails.getUsername();
+                return userRepository.findByUsername(username)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            }
+
+            log.error("Unexpected principal type: {}", principal.getClass().getName());
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
 }

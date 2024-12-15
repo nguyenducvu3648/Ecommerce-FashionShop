@@ -13,16 +13,12 @@ import com.demo_crud.demo.repository.Cart.CartRepository;
 import com.demo_crud.demo.repository.CartItem.CartItemRepository;
 import com.demo_crud.demo.repository.Product.ProductRepository;
 import com.demo_crud.demo.dto.response.Cart.CartResponse;
-import com.demo_crud.demo.repository.UserRepository;
+import com.demo_crud.demo.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +32,8 @@ public class CartService {
     CartRepository cartRepository;
     ProductRepository productRepository;
     CartMapper cartMapper;
-    UserRepository userRepository;
     CartItemRepository cartItemRepository;
+    UserService userService;
 
     public CartResponse addProductToCart(CartAdditionRequest request) {
         Product product = productRepository.findById(String.valueOf(request.getProductId()))
@@ -47,7 +43,7 @@ public class CartService {
             throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
         }
 
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseGet(() -> createCartForUser(currentUser));  // Nếu chưa có giỏ hàng, tạo mới
 
@@ -97,39 +93,12 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Authentication: {}", authentication);
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
-
-            // Xử lý Jwt principal
-            if (principal instanceof Jwt jwt) {
-                // Lấy username từ JWT claims
-                String username = jwt.getClaimAsString("sub"); // hoặc "preferred_username" tùy cấu hình
-                // Hoặc có thể lấy email: jwt.getClaimAsString("email")
-
-                log.info("Username from JWT: {}", username);
-
-                return userRepository.findByUsername(username)
-                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-            } else if (principal instanceof UserDetails userDetails) {
-                String username = userDetails.getUsername();
-                return userRepository.findByUsername(username)
-                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-            }
-
-            log.error("Unexpected principal type: {}", principal.getClass().getName());
-        }
-        throw new AppException(ErrorCode.UNAUTHORIZED_ACCESS);
-    }
 
 
 
 
     public CartResponse viewCart() {
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseGet(() -> {
                     log.info("No cart found for user {}. Returning an empty cart.", currentUser.getUsername());
@@ -139,7 +108,7 @@ public class CartService {
     }
 
     public CartResponse editCart(CartEditionRequest request) {
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
@@ -169,7 +138,7 @@ public class CartService {
     }
 
     public CartResponse removeCartItem(String cartItemId) {
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
 
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
@@ -193,7 +162,7 @@ public class CartService {
     }
 
     public CartResponse clearCart() {
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
@@ -206,15 +175,13 @@ public class CartService {
 
     @Transactional
     public List<CartItem> selectCartItems(List<String> cartItemIds) {
-        User currentUser = getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
         List<CartItem> updatedCartItems = cart.getCartItems().stream()
-                .map(cartItem -> {
-                    cartItem.setSelected(cartItemIds.contains(cartItem.getId()));
-                    return cartItem;
-                })
+                .filter(cartItem -> cartItemIds.contains(cartItem.getId()))
+                .peek(cartItem -> cartItem.setSelected(true))
                 .collect(Collectors.toList());
 
         cartItemRepository.saveAll(updatedCartItems);

@@ -16,4 +16,5 @@ public class CartItemResponse {
     ProductResponse productResponse;
     int quantity;
     double totalPrice;
+    boolean selected;
 }

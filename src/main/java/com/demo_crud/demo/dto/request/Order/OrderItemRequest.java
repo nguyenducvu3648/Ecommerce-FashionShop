@@ -1,4 +1,4 @@
-package com.demo_crud.demo.dto.response.Order;
+package com.demo_crud.demo.dto.request.Order;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,11 +9,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderItemResponse {
+public class OrderItemRequest {
     private String id;
     private String productId;
-    private String productName;
     private int quantity;
-    private double price;
-    private double totalPrice;
 }
