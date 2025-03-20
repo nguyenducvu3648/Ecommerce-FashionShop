@@ -33,4 +33,7 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Cart cart;
+
+    @ManyToMany
+    Set<Address> addresses;
 }

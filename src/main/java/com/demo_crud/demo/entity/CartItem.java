@@ -1,5 +1,6 @@
 package com.demo_crud.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @ToString(onlyExplicitlyIncluded = true)
+@JsonIgnoreProperties("cart")
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
                                     .message(errorCode.getMessage())
                                     .build());
     }
+    //nen su ly bat tat ca error khi validate
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();
@@ -47,4 +48,5 @@ public class GlobalExceptionHandler {
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
+
 }

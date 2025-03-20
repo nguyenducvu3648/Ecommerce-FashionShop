@@ -37,6 +37,6 @@ public class Order {
     @OneToOne
     Payment payment;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     String orderStatus;
 }

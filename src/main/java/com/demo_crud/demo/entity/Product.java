@@ -1,5 +1,6 @@
 package com.demo_crud.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+@JsonIgnoreProperties({"cartItems", "hibernateLazyInitializer", "handler"})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
