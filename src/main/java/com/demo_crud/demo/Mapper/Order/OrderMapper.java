@@ -10,6 +10,15 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "user", source = "user")
+    @Mapping(target = "orderItems", source = "orderItems")
+    @Mapping(target = "status", source = "orderStatus")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(target = "totalAmount", expression = "java(order.getOrderItems().stream().mapToDouble(OrderItem::getTotalPrice).sum())")
+    @Mapping(target = "payment", source = "payment")
     OrderResponse toOrderResponse(Order order);
 
     @Mapping(target = "id", ignore = true)

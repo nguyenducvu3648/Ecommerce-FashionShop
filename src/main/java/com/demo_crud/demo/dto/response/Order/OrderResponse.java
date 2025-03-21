@@ -1,5 +1,8 @@
 package com.demo_crud.demo.dto.response.Order;
 
+import com.demo_crud.demo.dto.response.Address.AddressResponse;
+import com.demo_crud.demo.dto.response.Payment.PaymentResponse;
+import com.demo_crud.demo.dto.response.UserResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,9 +16,12 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderResponse {
-    private String id;
-    private List<OrderItemResponse> orderItems;
-    private double totalAmount;
-    private String status;
-    private LocalDateTime createdAt;
+    String id;
+    UserResponse user;
+    List<OrderItemResponse> orderItems;
+    double totalAmount;
+    String status;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
+    PaymentResponse payment;
 }

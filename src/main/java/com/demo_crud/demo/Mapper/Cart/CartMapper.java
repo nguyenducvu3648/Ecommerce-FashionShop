@@ -25,7 +25,7 @@ public interface CartMapper {
 
     @Mapping(target = "cartItemId", source = "id")
     @Mapping(target = "productResponse", source = "product")
-    @Mapping(target = "totalPrice", expression = "java(cartItem.getQuantity() * cartItem.getProduct().getPrice())") // Tính tổng giá trị sản phẩm trong CartItem
+    @Mapping(target = "totalPrice", expression = "java(cartItem.getQuantity() * cartItem.getProduct().getPrice())")
     CartItemResponse toCartItemResponse(CartItem cartItem);
 
     @Mapping(target = "id", source = "id")

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,23 +15,24 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class OrderItem {
     @Id
-    @GeneratedValue (strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    Product product;
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    Order order;
+    private Order order;
 
     @Column(nullable = false)
-    int quantity;
+    private int quantity;
 
-    @Column(nullable = false)
-    double price;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
-    @Column(nullable = false)
-    private double totalPrice;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 }

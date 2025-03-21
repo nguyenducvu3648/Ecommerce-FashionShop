@@ -6,7 +6,6 @@ import com.demo_crud.demo.dto.response.Order.OrderResponse;
 import com.demo_crud.demo.entity.*;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
-import com.demo_crud.demo.repository.Cart.CartRepository;
 import com.demo_crud.demo.repository.CartItem.CartItemRepository;
 import com.demo_crud.demo.repository.Order.OrderRepository;
 import com.demo_crud.demo.service.UserService;
@@ -24,7 +23,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderService {
     OrderRepository orderRepository;
-    CartRepository cartRepository;
     UserService userService;
     OrderMapper orderMapper;
     CartItemRepository cartItemRepository;
@@ -32,13 +30,7 @@ public class OrderService {
     public OrderResponse createOrder(List<String> cartItemIds) {
         User user = userService.getCurrentUser();
 
-        Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
-
-        List<CartItem> cartItems = cart.getCartItems();
-        List<CartItem> selectedItems = cartItems.stream()
-                .filter(item -> cartItemIds.contains(item.getId()))
-                .toList();
+        List<CartItem> selectedItems = cartItemRepository.findByIdInAndCartUser(cartItemIds, user);
 
         if (selectedItems.isEmpty()) {
             throw new AppException(ErrorCode.NO_CART_ITEMS_SELECTED);
@@ -50,7 +42,7 @@ public class OrderService {
 
         Order order = Order.builder()
                 .user(user)
-                .createdAt(LocalDate.now())
+                .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .orderStatus(String.valueOf(OrderStatus.PENDING))
                 .totalAmount(totalAmount)
@@ -68,9 +60,9 @@ public class OrderService {
 
         order.setOrderItems(orderItems);
         orderRepository.save(order);
-        cartItemRepository.deleteAllByIdInBatch(
-                selectedItems.stream().map(CartItem::getId).toList()
-        );
+
+        cartItemRepository.deleteAllByIdInBatch(cartItemIds);
+
         return orderMapper.toOrderResponse(order);
     }
 }

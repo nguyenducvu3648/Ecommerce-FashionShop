@@ -1,5 +1,6 @@
 package com.demo_crud.demo.entity;
 
+import com.demo_crud.demo.Enum.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +18,10 @@ public class Payment {
     String id;
 
     @OneToOne
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
     Order order;
 
-    String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    PaymentMethod paymentMethod = PaymentMethod.PAYPAL;
 }

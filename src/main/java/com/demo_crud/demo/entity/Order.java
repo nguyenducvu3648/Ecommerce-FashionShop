@@ -1,10 +1,9 @@
 package com.demo_crud.demo.entity;
 
+import com.demo_crud.demo.Enum.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,11 +21,13 @@ public class Order {
     @Column(updatable = false, nullable = false)
     String id;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
-    LocalDate createdAt;
+    @Column(nullable = false, updatable = false)
+    LocalDateTime createdAt;
+
     LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -34,9 +35,9 @@ public class Order {
 
     double totalAmount;
 
-    @OneToOne
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     Payment payment;
 
-//    @Enumerated(EnumType.STRING)
-    String orderStatus;
+    @Enumerated(EnumType.STRING)
+    OrderStatus orderStatus;
 }

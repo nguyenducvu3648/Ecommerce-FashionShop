@@ -10,19 +10,15 @@ import com.demo_crud.demo.entity.User;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
 import com.demo_crud.demo.repository.Cart.CartRepository;
-import com.demo_crud.demo.repository.CartItem.CartItemRepository;
 import com.demo_crud.demo.repository.Product.ProductRepository;
 import com.demo_crud.demo.dto.response.Cart.CartResponse;
 import com.demo_crud.demo.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,7 +28,6 @@ public class CartService {
     CartRepository cartRepository;
     ProductRepository productRepository;
     CartMapper cartMapper;
-    CartItemRepository cartItemRepository;
     UserService userService;
 
     public CartResponse addProductToCart(CartAdditionRequest request) {
@@ -45,12 +40,10 @@ public class CartService {
 
         User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
-                .orElseGet(() -> createCartForUser(currentUser));  // Nếu chưa có giỏ hàng, tạo mới
+                .orElseGet(() -> createCartForUser(currentUser));
 
-        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         CartItem existingCartItem = findCartItem(cart, product);
         if (existingCartItem != null) {
-            // Nếu đã có, cập nhật số lượng
             int newQuantity = existingCartItem.getQuantity() + request.getQuantity();
             if (product.getQuantity() < newQuantity) {
                 throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
@@ -58,7 +51,6 @@ public class CartService {
             existingCartItem.setQuantity(newQuantity);
             existingCartItem.setTotalPrice(existingCartItem.getQuantity() * product.getPrice());
         } else {
-            // Nếu chưa có, tạo CartItem mới
             CartItem newCartItem = new CartItem();
             newCartItem.setCart(cart);
             newCartItem.setProduct(product);
@@ -78,14 +70,13 @@ public class CartService {
         return cartMapper.toCartResponse(cart);
     }
 
-    // Tìm CartItem trong giỏ hàng theo sản phẩm
     private CartItem findCartItem(Cart cart, Product product) {
         return cart.getCartItems().stream()
                 .filter(cartItem -> cartItem.getProduct().equals(product))
                 .findFirst()
                 .orElse(null);
     }
-    // Tạo giỏ hàng mới cho người dùng (nếu chưa có)
+
     private Cart createCartForUser(User user) {
         Cart cart = new Cart();
         cart.setUser(user);
@@ -93,16 +84,12 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-
-
-
-
     public CartResponse viewCart() {
         User currentUser = userService.getCurrentUser();
         Cart cart = cartRepository.findByUser(currentUser)
                 .orElseGet(() -> {
                     log.info("No cart found for user {}. Returning an empty cart.", currentUser.getUsername());
-                    return new Cart(); // Trả về giỏ hàng rỗng
+                    return new Cart();
                 });
         return cartMapper.toCartResponse(cart);
     }
@@ -171,21 +158,6 @@ public class CartService {
 
         cartRepository.save(cart);
         return cartMapper.toCartResponse(cart);
-    }
-
-    @Transactional
-    public List<CartItem> selectCartItems(List<String> cartItemIds) {
-        User currentUser = userService.getCurrentUser();
-        Cart cart = cartRepository.findByUser(currentUser)
-                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
-
-        List<CartItem> updatedCartItems = cart.getCartItems().stream()
-                .filter(cartItem -> cartItemIds.contains(cartItem.getId()))
-                .peek(cartItem -> cartItem.setSelected(true))
-                .collect(Collectors.toList());
-
-        cartItemRepository.saveAll(updatedCartItems);
-        return updatedCartItems;
     }
 
 }
