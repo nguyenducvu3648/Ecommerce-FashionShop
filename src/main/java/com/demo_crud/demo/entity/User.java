@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 
@@ -33,6 +34,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Cart cart;
 
-    @OneToMany
-    Set<Address> addresses;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
+    private List<Order> orders;
 }

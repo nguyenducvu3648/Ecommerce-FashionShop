@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class OrderService {
                 .user(user)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .orderStatus(String.valueOf(OrderStatus.PENDING))
+                .orderStatus(OrderStatus.valueOf(String.valueOf(OrderStatus.PENDING)))
                 .totalAmount(totalAmount)
                 .build();
 
@@ -53,8 +53,8 @@ public class OrderService {
             orderItem.setOrder(order);
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getProduct().getPrice());
-            orderItem.setTotalPrice(cartItem.getProduct().getPrice() * cartItem.getQuantity());
+            orderItem.setPrice(BigDecimal.valueOf(cartItem.getProduct().getPrice()));
+            orderItem.setTotalPrice(BigDecimal.valueOf(cartItem.getProduct().getPrice() * cartItem.getQuantity()));
             return orderItem;
         }).toList();
 
