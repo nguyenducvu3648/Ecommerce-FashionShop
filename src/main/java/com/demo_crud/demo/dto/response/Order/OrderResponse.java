@@ -3,6 +3,7 @@ package com.demo_crud.demo.dto.response.Order;
 import com.demo_crud.demo.dto.response.Address.AddressResponse;
 import com.demo_crud.demo.dto.response.Payment.PaymentResponse;
 import com.demo_crud.demo.dto.response.UserResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderResponse {
     String id;
@@ -22,6 +24,7 @@ public class OrderResponse {
     double totalAmount;
     String status;
     LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    List<AddressResponse> availableAddresses;
+    AddressResponse address;
     PaymentResponse payment;
 }

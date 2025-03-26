@@ -1,11 +1,14 @@
 package com.demo_crud.demo.service.Order;
 
 import com.demo_crud.demo.Enum.OrderStatus;
+import com.demo_crud.demo.Mapper.Address.AddressMapper;
 import com.demo_crud.demo.Mapper.Order.OrderMapper;
+import com.demo_crud.demo.dto.response.Address.AddressResponse;
 import com.demo_crud.demo.dto.response.Order.OrderResponse;
 import com.demo_crud.demo.entity.*;
 import com.demo_crud.demo.exception.AppException;
 import com.demo_crud.demo.exception.ErrorCode;
+import com.demo_crud.demo.repository.AddressRepository;
 import com.demo_crud.demo.repository.CartItem.CartItemRepository;
 import com.demo_crud.demo.repository.Order.OrderRepository;
 import com.demo_crud.demo.service.UserService;
@@ -13,8 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,14 +27,20 @@ public class OrderService {
     UserService userService;
     OrderMapper orderMapper;
     CartItemRepository cartItemRepository;
+    AddressRepository addressRepository;
+    AddressMapper addressMapper;
 
     public OrderResponse createOrder(List<String> cartItemIds) {
+        if (cartItemIds == null || cartItemIds.isEmpty()) {
+            throw new AppException(ErrorCode.NO_CART_ITEMS_SELECTED);
+        }
+
         User user = userService.getCurrentUser();
 
         List<CartItem> selectedItems = cartItemRepository.findByIdInAndCartUser(cartItemIds, user);
 
         if (selectedItems.isEmpty()) {
-            throw new AppException(ErrorCode.NO_CART_ITEMS_SELECTED);
+            throw new AppException(ErrorCode.NO_CART_ITEMS_FOUND);
         }
 
         double totalAmount = selectedItems.stream()
@@ -43,9 +50,9 @@ public class OrderService {
         Order order = Order.builder()
                 .user(user)
                 .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .orderStatus(OrderStatus.valueOf(String.valueOf(OrderStatus.PENDING)))
+                .orderStatus(OrderStatus.PENDING)
                 .totalAmount(totalAmount)
+                .address(null)
                 .build();
 
         List<OrderItem> orderItems = selectedItems.stream().map(cartItem -> {
@@ -53,16 +60,26 @@ public class OrderService {
             orderItem.setOrder(order);
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(BigDecimal.valueOf(cartItem.getProduct().getPrice()));
-            orderItem.setTotalPrice(BigDecimal.valueOf(cartItem.getProduct().getPrice() * cartItem.getQuantity()));
+            orderItem.setPrice(cartItem.getProduct().getPrice());
+            orderItem.setTotalPrice(cartItem.getProduct().getPrice() * cartItem.getQuantity());
             return orderItem;
         }).toList();
 
+
         order.setOrderItems(orderItems);
+
         orderRepository.save(order);
 
         cartItemRepository.deleteAllByIdInBatch(cartItemIds);
 
-        return orderMapper.toOrderResponse(order);
+        List<AddressResponse> addressResponses = addressRepository.findAll().stream()
+                .map(addressMapper::toAddressResponse)
+                .toList();
+
+        OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+        orderResponse.setAvailableAddresses(addressResponses);
+
+        return orderResponse;
     }
+
 }

@@ -28,9 +28,8 @@ public class Order {
     @Column(nullable = false, updatable = false)
     LocalDateTime createdAt;
 
-    LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     List<OrderItem> orderItems;
 
     double totalAmount;
@@ -42,6 +41,6 @@ public class Order {
     OrderStatus orderStatus;
 
     @ManyToOne
-    @JoinColumn(name = "address_id", nullable = false)
-    private Address address;
+    @JoinColumn(name = "address_id", nullable = true)
+    Address address;
 }

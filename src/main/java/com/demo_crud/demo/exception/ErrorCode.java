@@ -26,7 +26,10 @@ public enum ErrorCode {
     CART_ITEM_NOT_EXISTED(1016, "cart item not existed",HttpStatus.NOT_FOUND),
     CATEGORY_EXISTED(1017,"category has been existed",HttpStatus.NOT_FOUND),
     CATEGORY_NOT_EXISTED(1018,"category not existed",HttpStatus.NOT_FOUND),
-    NO_CART_ITEMS_SELECTED(1019,"no cart items selected",HttpStatus.NOT_FOUND );
+    NO_CART_ITEMS_SELECTED(1019,"no cart items selected",HttpStatus.NOT_FOUND ),
+    NO_CART_ITEMS_FOUND(1020,"no cart item found",HttpStatus.NOT_FOUND ),
+    ADDRESS_NOT_FOUND(1021,"address not found",HttpStatus.NOT_FOUND);
+
     int code;
     String message;
     HttpStatus statusCode;

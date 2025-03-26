@@ -1,7 +1,5 @@
 package com.demo_crud.demo.Mapper.Cart;
 
-import com.demo_crud.demo.dto.request.Cart.CartAdditionRequest;
-import com.demo_crud.demo.dto.request.Cart.CartEditionRequest;
 import com.demo_crud.demo.dto.response.Cart.CartItemResponse;
 import com.demo_crud.demo.dto.response.Cart.CartResponse;
 import com.demo_crud.demo.dto.response.ProductResponse.ProductResponse;
@@ -10,12 +8,9 @@ import com.demo_crud.demo.entity.CartItem;
 import com.demo_crud.demo.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface CartMapper {
-
-    Cart toCart(CartAdditionRequest request);
 
     @Mapping(target = "cartId", source = "id")
     @Mapping(target = "cartItems", source = "cartItems")
@@ -36,5 +31,4 @@ public interface CartMapper {
     @Mapping(target = "imageUrl", source = "imageUrl")
     ProductResponse toProductResponse(Product product);
 
-    void updateCart(@MappingTarget Cart cart, CartEditionRequest request);
 }
