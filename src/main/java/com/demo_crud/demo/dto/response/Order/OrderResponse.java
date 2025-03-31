@@ -26,5 +26,6 @@ public class OrderResponse {
     LocalDateTime createdAt;
     List<AddressResponse> availableAddresses;
     AddressResponse address;
+    List<String> paymentMethod;
     PaymentResponse payment;
 }

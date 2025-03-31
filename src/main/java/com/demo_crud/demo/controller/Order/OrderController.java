@@ -1,6 +1,7 @@
 package com.demo_crud.demo.controller.Order;
 
 import com.demo_crud.demo.dto.request.ApiResponse;
+import com.demo_crud.demo.dto.request.Order.OrderUpdateRequest;
 import com.demo_crud.demo.dto.response.Order.OrderResponse;
 import com.demo_crud.demo.service.Order.OrderService;
 import lombok.AccessLevel;
@@ -21,6 +22,12 @@ public class OrderController {
     public ApiResponse<OrderResponse> createOrder(@RequestBody List<String> cartItemIds) {
         ApiResponse<OrderResponse> apiResponse = new ApiResponse<>();
         apiResponse.setData(orderService.createOrder(cartItemIds));
+        return apiResponse;
+    }
+    @PutMapping("/updateOrder/{id}")
+    public ApiResponse<OrderResponse> updateOrder(@PathVariable String id,@RequestBody OrderUpdateRequest request) {
+        ApiResponse<OrderResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(orderService.updateOrder(id, request));
         return apiResponse;
     }
 }

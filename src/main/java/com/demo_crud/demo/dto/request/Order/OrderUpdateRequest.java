@@ -1,6 +1,8 @@
 package com.demo_crud.demo.dto.request.Order;
 
-import com.demo_crud.demo.Enum.OrderStatus;
+import com.demo_crud.demo.dto.request.Address.AddressCreationRequest;
+import com.demo_crud.demo.dto.request.OrderItem.OrderItemUpdateRequest;
+import com.demo_crud.demo.dto.request.Payment.PaymentUpdateRequest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,6 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderUpdateRequest {
-    private List<OrderItemRequest> orderItems;
-    private OrderStatus status;
+    List<OrderItemUpdateRequest> orderItems;
+
+    String addressId;
+
+    AddressCreationRequest address;
+
+    PaymentUpdateRequest paymentMethod;
 }

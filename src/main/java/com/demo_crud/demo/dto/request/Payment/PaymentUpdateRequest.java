@@ -1,4 +1,4 @@
-package com.demo_crud.demo.dto.request.Order;
+package com.demo_crud.demo.dto.request.Payment;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,8 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderItemRequest {
-    private String id;
-    private String productId;
-    private int quantity;
+public class PaymentUpdateRequest {
+    String paymentMethod;
 }
