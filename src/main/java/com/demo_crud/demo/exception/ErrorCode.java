@@ -30,7 +30,9 @@ public enum ErrorCode {
     NO_CART_ITEMS_FOUND(1020,"no cart item found",HttpStatus.NOT_FOUND ),
     ADDRESS_NOT_FOUND(1021,"address not found",HttpStatus.NOT_FOUND),
     ORDER_NOT_FOUND(1022,"order not found",HttpStatus.NOT_FOUND),
-    ORDER_ITEM_NOT_FOUND(1023,"orderItem not found",HttpStatus.NOT_FOUND);
+    ORDER_ITEM_NOT_FOUND(1023,"orderItem not found",HttpStatus.NOT_FOUND),
+    ORDER_CANNOT_BE_CONFIRMED(1024 ,"order cannot be confirm" ,HttpStatus.BAD_REQUEST ),
+    ORDER_CANNOT_BE_DELETED(1025,"cannot delete order" ,HttpStatus.BAD_REQUEST );
 
 
 

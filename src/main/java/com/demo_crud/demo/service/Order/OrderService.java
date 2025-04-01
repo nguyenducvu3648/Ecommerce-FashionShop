@@ -116,8 +116,6 @@ public class OrderService {
         orderRepository.save(order);
         return orderMapper.toOrderResponse(order);
     }
-
-
     private void updateOrderItems(Order order, List<OrderItemUpdateRequest> orderItemRequests) {
         if (orderItemRequests == null || orderItemRequests.isEmpty()) {
             return;
@@ -135,7 +133,6 @@ public class OrderService {
             orderItem.setTotalPrice(orderItem.getPrice() * itemRequest.getQuantity());
         }
     }
-
     private void updateOrderAddress(Order order, String addressId, AddressCreationRequest addressRequest) {
         if (addressId != null) {
             Address existingAddress = addressRepository.findById(addressId)
@@ -147,7 +144,6 @@ public class OrderService {
             order.setAddress(newAddress);
         }
     }
-
     private void updateOrderPayment(Order order, PaymentUpdateRequest paymentRequest) {
         if (paymentRequest.getPaymentMethod() != null) {
             Payment payment = order.getPayment();
@@ -159,5 +155,44 @@ public class OrderService {
             paymentRepository.save(payment);
             order.setPayment(payment);
         }
+    }
+
+    @Transactional
+    public OrderResponse confirmOrder(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new AppException(ErrorCode.ORDER_CANNOT_BE_CONFIRMED);
+        }
+
+        order.setOrderStatus(OrderStatus.READY_FOR_PAYMENT);
+
+        orderRepository.save(order);
+        return orderMapper.toOrderResponse(order);
+    }
+
+
+    @Transactional
+    public OrderResponse cancelOrder(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new AppException(ErrorCode.ORDER_CANNOT_BE_CONFIRMED);
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+        return orderMapper.toOrderResponse(order);
+    }
+
+
+    public void deleteOrder(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if (!order.getOrderStatus().equals(OrderStatus.CANCELLED)) {
+            throw new AppException(ErrorCode.ORDER_CANNOT_BE_DELETED);
+        }
+        orderRepository.delete(order);
     }
 }

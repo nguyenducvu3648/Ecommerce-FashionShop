@@ -30,4 +30,21 @@ public class OrderController {
         apiResponse.setData(orderService.updateOrder(id, request));
         return apiResponse;
     }
+    @PutMapping("/{id}/confirm")
+    public ApiResponse<OrderResponse> confirmOrder(@PathVariable String id) {
+        ApiResponse<OrderResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(orderService.confirmOrder(id));
+        return apiResponse;
+    }
+    @PutMapping("/{id}/cancel")
+    public ApiResponse<OrderResponse> cancelOrder(@PathVariable String id) {
+        ApiResponse<OrderResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setData(orderService.cancelOrder(id));
+        return apiResponse;
+    }
+
+    @DeleteMapping("/{id}/deleteOrder")
+    public void deleteOrder(@PathVariable String id) {
+       orderService.deleteOrder(id);
+    }
 }
