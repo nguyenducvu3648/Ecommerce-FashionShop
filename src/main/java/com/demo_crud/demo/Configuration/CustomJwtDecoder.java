@@ -19,9 +19,12 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
     private NimbusJwtDecoder nimbusJwtDecoder  = null;
 
+    public CustomJwtDecoder(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
     @Override
     public Jwt decode(String token) throws JwtException {
         try {

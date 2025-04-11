@@ -24,10 +24,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -194,5 +196,16 @@ public class OrderService {
             throw new AppException(ErrorCode.ORDER_CANNOT_BE_DELETED);
         }
         orderRepository.delete(order);
+    }
+
+    public List<OrderResponse> getMyOrder() {
+        User currentUser = userService.getCurrentUser();
+        List<Order> orders = orderRepository.findOrderByUser(currentUser);
+        if (orders.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return orders.stream()
+                .map(orderMapper::toOrderResponse)
+                .collect(Collectors.toList());
     }
 }
