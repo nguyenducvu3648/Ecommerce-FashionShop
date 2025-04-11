@@ -33,7 +33,6 @@ public class AppConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
-
     @NonFinal
     static final String ADMIN_USER_NAME = "admin";
     @NonFinal
