@@ -47,4 +47,11 @@ public class OrderController {
     public void deleteOrder(@PathVariable String id) {
        orderService.deleteOrder(id);
     }
+
+    @GetMapping("/getMyOrder")
+    public ApiResponse<List<OrderResponse>> getMyOrder() {
+        ApiResponse<List<OrderResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setData(orderService.getMyOrder());
+        return apiResponse;
+    }
 }
